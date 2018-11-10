@@ -11,6 +11,7 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.app.Activity
 import android.content.Context
+import android.util.Log
 
 val nodes : Int = 5
 
@@ -94,7 +95,9 @@ class BiTriangleRotateStepView(ctx : Context) : View(ctx) {
     data class State(var scale : Float = 0f, var dir : Float = 0f, var prevScale : Float = 0f) {
 
         fun update(cb : (Float) -> Unit) {
-            scale += scale.updateScale(dir)
+            val k : Float = scale.updateScale(dir)
+            scale += k
+            Log.d("updating scale by", "$k")
             if (Math.abs(scale - prevScale) > 1) {
                 scale = prevScale + dir
                 dir = 0f

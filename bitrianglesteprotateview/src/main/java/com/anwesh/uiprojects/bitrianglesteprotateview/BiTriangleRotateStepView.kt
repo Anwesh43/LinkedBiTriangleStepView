@@ -30,7 +30,7 @@ fun Float.divideScale(i : Int, n : Int) : Float = Math.min(n.getInverse(), Math.
 
 fun Float.getFactor() : Float = Math.floor(this / FACTOR).toFloat()
 
-fun Float.updateScale(dir : Int) : Float {
+fun Float.updateScale(dir : Float) : Float {
     val k : Float = getFactor()
     val f1 : Float =  ((1 - k) * (2 - k) / 2) / CROSS_LINES
     val f2 : Float = ((k) * (2 - k)) / TRI_LINES
@@ -87,5 +87,25 @@ class BiTriangleRotateStepView(ctx : Context) : View(ctx) {
             }
         }
         return true
+    }
+
+    data class State(var scale : Float = 0f, var dir : Float = 0f, var prevScale : Float = 0f) {
+
+        fun update(cb : (Float) -> Unit) {
+            scale += scale.updateScale(dir)
+            if (Math.abs(scale - prevScale) > 1) {
+                scale = prevScale + dir
+                dir = 0f
+                prevScale = scale
+                cb(prevScale)
+            }
+        }
+
+        fun startUpdating(cb : () -> Unit) {
+            if (dir == 0f) {
+                dir = 1f - 2 * prevScale
+                cb()
+            }
+        }
     }
 }

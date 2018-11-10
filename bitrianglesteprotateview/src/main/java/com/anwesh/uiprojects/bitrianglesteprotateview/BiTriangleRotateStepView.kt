@@ -37,3 +37,37 @@ fun Float.updateScale(dir : Int) : Float {
     val f3 : Float = k
     return SC_GAP * dir * (f1 + f2 + f3)
 }
+
+fun Canvas.drawBRTSNode(i : Int, scale : Float, paint : Paint) {
+    val w : Float = width.toFloat()
+    val h : Float = height.toFloat()
+    val gap : Float = w / (nodes + 1)
+    val sc1 : Float = scale.divideScale(0, 3)
+    val sc2 : Float = scale.divideScale(1, 3)
+    val sc3 : Float = scale.divideScale(2, 3)
+    val size : Float = gap / 3
+    val degCross : Float = 360f / CROSS_LINES
+    val degTri : Float = 360f / TRI_LINES
+    paint.strokeWidth = Math.min(w, h) / 60
+    paint.strokeCap = Paint.Cap.ROUND
+    paint.color = Color.parseColor("#01579B")
+    save()
+    translate(gap + gap * i, h/2)
+    rotate(180f * sc3)
+    for (j in 0..(CROSS_LINES - 1)) {
+        val sc : Float = sc1.divideScale(j, CROSS_LINES)
+        save()
+        rotate(degCross)
+        drawLine(0f, 0f, size * sc, size * sc, paint)
+        restore()
+    }
+    for (j in 0..(TRI_LINES - 1)) {
+        val sc : Float = sc2.divideScale(j, TRI_LINES)
+        save()
+        rotate(degTri)
+        translate(0f, size)
+        drawLine(size, 0f, size - 2 * size * sc, 0f, paint)
+        restore()
+    }
+    restore()
+}

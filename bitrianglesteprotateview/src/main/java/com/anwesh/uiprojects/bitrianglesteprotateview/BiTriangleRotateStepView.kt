@@ -233,4 +233,13 @@ class BiTriangleRotateStepView(ctx : Context) : View(ctx) {
             }
         }
     }
+
+    companion object {
+
+        fun create(activity : Activity) : BiTriangleRotateStepView {
+            val view : BiTriangleRotateStepView = BiTriangleRotateStepView(activity)
+            activity.setContentView(view)
+            return view
+        }
+    }
 }

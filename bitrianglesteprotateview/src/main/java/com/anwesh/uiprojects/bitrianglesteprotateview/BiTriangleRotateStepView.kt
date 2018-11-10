@@ -25,6 +25,8 @@ val FACTOR : Double = 1.0 / PARTS
 
 val SC_GAP : Float = 0.1f / PARTS
 
+val DELAY : Long = 30
+
 fun Int.getInverse() : Float = 1f / this
 
 fun Float.divideScale(i : Int, n : Int) : Float = Math.min(n.getInverse(), Math.max(0f, this - i * n.getInverse())) * n
@@ -35,7 +37,7 @@ fun Float.updateScale(dir : Float) : Float {
     val k : Float = getFactor()
     val f1 : Float =  ((1 - k) * (2 - k) / 2) / CROSS_LINES
     val f2 : Float = ((k) * (2 - k)) / TRI_LINES
-    val f3 : Float = k
+    val f3 : Float = (k * (k - 1)) / 2
     return SC_GAP * dir * (f1 + f2 + f3)
 }
 
@@ -58,14 +60,14 @@ fun Canvas.drawBRTSNode(i : Int, scale : Float, paint : Paint) {
     for (j in 0..(CROSS_LINES - 1)) {
         val sc : Float = sc1.divideScale(j, CROSS_LINES)
         save()
-        rotate(degCross)
+        rotate(degCross * j)
         drawLine(0f, 0f, size * sc, size * sc, paint)
         restore()
     }
     for (j in 0..(TRI_LINES - 1)) {
         val sc : Float = sc2.divideScale(j, TRI_LINES)
         save()
-        rotate(degTri)
+        rotate(degTri * j)
         translate(0f, size)
         drawLine(size, 0f, size - 2 * size * sc, 0f, paint)
         restore()
@@ -120,7 +122,7 @@ class BiTriangleRotateStepView(ctx : Context) : View(ctx) {
             if (animated) {
                 cb()
                 try {
-                    Thread.sleep(50)
+                    Thread.sleep(DELAY)
                     view.invalidate()
                 } catch(ex : Exception) {
 
@@ -154,7 +156,7 @@ class BiTriangleRotateStepView(ctx : Context) : View(ctx) {
 
         fun addNeighbor() {
             if (i < nodes - 1) {
-                next = BTRSNode(0)
+                next = BTRSNode(i+1)
                 next?.prev = this
             }
         }

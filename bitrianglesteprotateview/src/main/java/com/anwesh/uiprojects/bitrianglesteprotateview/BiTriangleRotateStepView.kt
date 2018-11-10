@@ -81,6 +81,12 @@ class BiTriangleRotateStepView(ctx : Context) : View(ctx) {
 
     private val renderer = Renderer(this)
 
+    var onAnimationListener : OnAnimationCompleteListener? = null
+
+    fun addOnAnimationListener(onComplete : (Int) -> Unit, onReset : (Int) -> Unit) {
+        onAnimationListener = OnAnimationCompleteListener(onComplete, onReset)
+    }
+
     override fun onDraw(canvas : Canvas) {
         renderer.render(canvas, paint)
     }
@@ -225,6 +231,10 @@ class BiTriangleRotateStepView(ctx : Context) : View(ctx) {
             animator.animate {
                 btrs.update {i, scl ->
                     animator.stop()
+                    when (scl) {
+                        0f -> view.onAnimationListener?.onReset?.invoke(i)
+                        1f -> view.onAnimationListener?.onComplete?.invoke(i)
+                    }
                 }
             }
         }
@@ -244,4 +254,6 @@ class BiTriangleRotateStepView(ctx : Context) : View(ctx) {
             return view
         }
     }
+
+    data class OnAnimationCompleteListener(var onComplete : (Int) -> Unit, var onReset : (Int) -> Unit)
 }
